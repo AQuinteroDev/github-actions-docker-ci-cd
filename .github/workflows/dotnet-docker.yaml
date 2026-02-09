@@ -10,9 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  build: # He cambiado 'test' por 'build' para que el 'needs' de abajo funcione
     runs-on: ubuntu-latest
-
     steps:
       - name: Setup repo
         uses: actions/checkout@v4
@@ -30,12 +29,12 @@ jobs:
 
   docker:
     name: Contenerizacion con Docker
-    needs: test # Solo se ejecuta si el job de 'test' termina con éxito
+    needs: [build] 
     runs-on: ubuntu-latest
     steps:
       - name: Setup repo
         uses: actions/checkout@v4
 
       - name: Build Docker Image
-        # Construimos la imagen usando el Dockerfile que tienes en la raíz
+        # CUIDADO: Si no tienes el archivo Dockerfile en la raíz, esto seguirá dando error
         run: docker build -t mi-app-deno .
