@@ -40,3 +40,14 @@ jobs:
 
       - name: Run tests
         run: deno test -A
+    
+    docker:
+    name: Contenerizacion con Docker
+    needs: test # Solo se ejecuta si los tests de Deno pasan (como en el flujo de Rodrigo)
+    runs-on: ubuntu-latest # Corregido: era latest, no lastest
+    steps:
+      - name: Setup repo
+        uses: actions/checkout@v4
+
+      - name: Build Docker Image
+        run: docker build -t mi-app-deno .
