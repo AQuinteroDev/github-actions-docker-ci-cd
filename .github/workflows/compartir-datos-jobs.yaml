@@ -1,4 +1,4 @@
-name: Comaprtir datos entre jobs
+name: Comaprtir datos entre job
 
 on:
   push:
@@ -41,4 +41,5 @@ jobs:
       -name: Muestra el contenido del artefacto
         shell: branches
         run: ls publish -R
+
 
