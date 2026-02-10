@@ -1,40 +1,33 @@
-name: Deno y Docker CI
+name: .NET con Docker
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
   pull_request:
-    branches: ["main"]
-
-permissions:
-  contents: read
+    branches: [ "main" ]
 
 jobs:
-  build: # He cambiado 'test' por 'build' para que el 'needs' de abajo funcione
+  build:
+
     runs-on: ubuntu-latest
+
     steps:
-      - name: Setup repo
-        uses: actions/checkout@v4
-
-      - name: Setup Deno
-        uses: denoland/setup-deno@61fe2df320078202e33d7d5ad347e7dcfa0e8f31 
-        with:
-          deno-version: v1.x
-
-      - name: Run linter
-        run: deno lint
-
-      - name: Run tests
-        run: deno test -A
-
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore src/wpm-api/WisdomPetMedicine.sln
+    - name: Build
+      run: dotnet build src/wpm-api/WisdomPetMedicine.sln --no-restore
+    - name: Test
+      run: dotnet test src/wpm-api/WisdomPetMedicine.sln --no-build --verbosity normal
   docker:
-    name: Contenerizacion con Docker
-    needs: [build] 
+    name: Contenerización con Docker y .NET
     runs-on: ubuntu-latest
+    needs: [build]
     steps:
-      - name: Setup repo
-        uses: actions/checkout@v4
-
-      - name: Build Docker Image
-        # CUIDADO: Si no tienes el archivo Dockerfile en la raíz, esto seguirá dando error
-        run: docker build -t mi-app-deno .
+    - uses: actions/checkout@v3
+    - name: docker build
+      run: docker build src/wpm-api --file src/wpm-api/WisdomPetMedicine.Api/Dockerfile --tag github-action-esencial
