@@ -1,28 +1,25 @@
-name: Deno CI
+name: .NET
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
   pull_request:
-    branches: ["main"]
-
-permissions:
-  contents: read
+    branches: [ "main" ]
 
 jobs:
-  test:
+  build:
+
     runs-on: ubuntu-latest
+
     steps:
-      - name: Setup repo
-        uses: actions/checkout@v4
-
-      - name: Setup Deno
-        uses: denoland/setup-deno@61fe2df320078202e33d7d5ad347e7dcfa0e8f31
-        with:
-          deno-version: v1.x
-
-      - name: Run linter
-        run: deno lint
-
-      - name: Run tests
-        run: deno test -A
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore src/wpm-api/WisdomPetMedicine.sln
+    - name: Build
+      run: dotnet build src/wpm-api/WisdomPetMedicine.sln --no-restore
+    - name: Test
+      run: dotnet test src/wpm-api/WisdomPetMedicine.sln --no-build --verbosity normal
